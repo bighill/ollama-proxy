@@ -46,7 +46,7 @@ func logRequest(r *http.Request, body []byte, start time.Time) {
 	timestamp := start.Format("15:04:05.000")
 	
 	fmt.Printf("\n%s%s╔════════════════════════════════════════════════════════════════╗%s\n", colorGray, colorBold, colorReset)
-	fmt.Printf("%s%s║%s %s%sREQUEST%s %s%s│%s %s%s%s%s\n", colorGray, colorBold, colorReset, colorCyan, colorBold, colorReset, colorGray, colorBold, colorReset, colorGray, timestamp, colorReset)
+	fmt.Printf("%s%s║%s %s%sREQUEST%s %s%s│%s %s%s%s%s%s\n", colorGray, colorBold, colorReset, colorCyan, colorBold, colorReset, colorGray, colorBold, colorReset, colorGray, colorBold, timestamp, colorReset, colorReset)
 	fmt.Printf("%s%s╠════════════════════════════════════════════════════════════════╣%s\n", colorGray, colorBold, colorReset)
 	
 	// Method
@@ -57,7 +57,7 @@ func logRequest(r *http.Request, body []byte, start time.Time) {
 	
 	// Query string
 	if r.URL.RawQuery != "" {
-		fmt.Printf("%s%s║%s %sQuery:%s      %s%s%s%s\n", colorGray, colorBold, colorReset, colorYellow, colorReset, colorCyan, r.URL.RawQuery, colorReset)
+		fmt.Printf("%s%s║%s %sQuery:%s      %s%s%s\n", colorGray, colorBold, colorReset, colorYellow, colorReset, colorCyan, r.URL.RawQuery, colorReset)
 	}
 	
 	// Headers

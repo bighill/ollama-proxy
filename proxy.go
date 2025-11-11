@@ -30,7 +30,7 @@ func createProxy() (*httputil.ReverseProxy, error) {
 	// Override ModifyResponse to log response details
 	proxy.ModifyResponse = func(resp *http.Response) error {
 		// Log response status
-		fmt.Printf("%s%s%sResponse: %s%s %s%s%s\n\n", 
+		fmt.Printf("%s%sResponse: %s%s %s%s%s\n\n", 
 			colorGray, colorBold, colorReset,
 			colorGreen, colorBold, resp.Status, colorReset)
 		return nil

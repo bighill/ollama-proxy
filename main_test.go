@@ -37,7 +37,7 @@ func TestLoggingMiddleware(t *testing.T) {
 	})
 
 	// Wrap with logging middleware
-	wrapped := loggingMiddleware(echoHandler)
+	wrapped := loggingMiddleware(echoHandler, false)
 
 	// Create test request with body
 	body := `{"test": "data"}`
@@ -70,7 +70,7 @@ func TestLoggingMiddlewarePreservesBody(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	wrapped := loggingMiddleware(captureHandler)
+	wrapped := loggingMiddleware(captureHandler, false)
 
 	body := `{"model": "llama2", "prompt": "test"}`
 	req := httptest.NewRequest("POST", "/api/generate", bytes.NewBufferString(body))
@@ -88,7 +88,7 @@ func TestLoggingMiddlewareWithEmptyBody(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	wrapped := loggingMiddleware(handler)
+	wrapped := loggingMiddleware(handler, false)
 
 	req := httptest.NewRequest("GET", "/api/test", nil)
 	rr := httptest.NewRecorder()
@@ -107,7 +107,7 @@ func TestLogRequest(t *testing.T) {
 	req.Header.Set("X-Test-Header", "test-value")
 	
 	start := time.Now()
-	logRequest(req, []byte(body), start)
+	logRequest(req, []byte(body), start, false)
 	// If we get here without panic, test passes
 }
 

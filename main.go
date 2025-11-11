@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -49,6 +50,10 @@ func getPrivateIP() string {
 }
 
 func main() {
+	// Parse command line flags
+	verbose := flag.Bool("v", false, "Enable verbose logging (show full traffic)")
+	flag.Parse()
+
 	// Create reverse proxy
 	proxy, err := createProxy()
 	if err != nil {
@@ -56,7 +61,7 @@ func main() {
 	}
 
 	// Create handler that wraps proxy with logging middleware
-	handler := loggingMiddleware(proxy)
+	handler := loggingMiddleware(proxy, *verbose)
 
 	// Get private IP address
 	privateIP := getPrivateIP()

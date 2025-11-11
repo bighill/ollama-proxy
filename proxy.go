@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"time"
 )
 
 const ollamaURL = "http://localhost:11434"
@@ -29,10 +30,23 @@ func createProxy() (*httputil.ReverseProxy, error) {
 
 	// Override ModifyResponse to log response details
 	proxy.ModifyResponse = func(resp *http.Response) error {
-		// Log response status
-		fmt.Printf("%s%sResponse: %s%s %s%s%s\n\n", 
-			colorGray, colorBold, colorReset,
-			colorGreen, colorBold, resp.Status, colorReset)
+		// Get start time from request context
+		var elapsed time.Duration
+		if startTime, ok := resp.Request.Context().Value(requestStartTimeKey).(time.Time); ok {
+			elapsed = time.Since(startTime)
+		}
+
+		// Log response status with elapsed time
+		if elapsed > 0 {
+			fmt.Printf("%s%sResponse: %s%s %s%s%s %s%s(%s)%s\n",
+				colorGray, colorBold, colorReset,
+				colorGreen, colorBold, resp.Status, colorReset,
+				colorGray, colorReset, elapsed.Round(time.Millisecond), colorReset)
+		} else {
+			fmt.Printf("%s%sResponse: %s%s %s%s%s\n",
+				colorGray, colorBold, colorReset,
+				colorGreen, colorBold, resp.Status, colorReset)
+		}
 		return nil
 	}
 

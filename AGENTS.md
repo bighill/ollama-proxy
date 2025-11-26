@@ -19,7 +19,7 @@ This repository is a lightweight, zero-dependency Go HTTP proxy for Ollama. It i
 ### Testing
 
 - **Unit Tests**: Run `go test ./...` to run all unit tests.
-- **Integration Tests**: Use `./test_proxy.sh` to verify the proxy against a running Ollama instance.
+- **Integration Tests**: Use `./integration_test.sh` to verify the proxy against a running Ollama instance.
 
 ### Code Style
 

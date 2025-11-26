@@ -34,6 +34,15 @@ A lightweight, zero-dependency Go HTTP proxy service that forwards all requests 
 
 3. The proxy will start on `http://localhost:3131`. It will also display your private IP address for remote access.
 
+### Building
+
+To build a binary for production or distribution:
+
+```bash
+go build -o ollama-proxy .
+./ollama-proxy
+```
+
 ### Using the Proxy
 
 Send requests to the proxy just like you would to Ollama:
@@ -47,7 +56,7 @@ curl http://localhost:3131/api/generate -d '{"model": "llama2", "prompt": "Hello
 A convenience script is provided to test the proxy:
 
 ```bash
-./test_proxy.sh
+./integration_test.sh
 ```
 
 ## Configuration

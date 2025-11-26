@@ -5,9 +5,15 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 )
 
-const port = ":3131"
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
 
 func getPrivateIP() string {
 	addrs, _ := net.InterfaceAddrs()
@@ -22,9 +28,16 @@ func getPrivateIP() string {
 }
 
 func main() {
+	port := getEnv("OLLAMA_PROXY_PORT", "3131")
+	// Ensure port starts with :
+	if len(port) > 0 && port[0] != ':' {
+		port = ":" + port
+	}
+
+	ollamaURL := getEnv("OLLAMA_HOST", "http://localhost:11434")
 
 	// Create reverse proxy
-	proxy, err := createProxy()
+	proxy, err := createProxy(ollamaURL)
 	if err != nil {
 		log.Fatalf("Failed to create proxy: %v", err)
 	}

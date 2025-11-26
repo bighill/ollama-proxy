@@ -53,7 +53,6 @@ func logRequest(body []byte, start time.Time) {
 	timestamp := start.Format("15:04:05.000")
 
 	if len(body) > 0 {
-		// Try to extract user message content from JSON body
 		var payload struct {
 			Messages []struct {
 				Role    string `json:"role"`
@@ -64,7 +63,6 @@ func logRequest(body []byte, start time.Time) {
 			fmt.Printf("%s%s%s\n", colorGray, colorBold, timestamp)
 			fmt.Printf("%s%s%s\n", colorBlue, colorBold, payload.Messages[0].Content)
 		} else {
-			// Fallback: print raw body
 			fmt.Printf("%s%s%s\n", colorGray, colorBold, timestamp)
 			fmt.Println("Content not available")
 		}

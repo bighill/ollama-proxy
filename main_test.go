@@ -10,7 +10,7 @@ import (
 )
 
 func TestCreateProxy(t *testing.T) {
-	proxy, err := createProxy()
+	proxy, err := createProxy("http://localhost:11434")
 	if err != nil {
 		t.Fatalf("createProxy() failed: %v", err)
 	}

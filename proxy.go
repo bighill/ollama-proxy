@@ -8,11 +8,9 @@ import (
 	"time"
 )
 
-const ollamaURL = "http://localhost:11434"
-
 // createProxy creates a reverse proxy that forwards requests to Ollama
-func createProxy() (*httputil.ReverseProxy, error) {
-	target, err := url.Parse(ollamaURL)
+func createProxy(targetURL string) (*httputil.ReverseProxy, error) {
+	target, err := url.Parse(targetURL)
 	if err != nil {
 		return nil, fmt.Errorf("invalid Ollama URL: %w", err)
 	}

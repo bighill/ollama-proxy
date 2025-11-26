@@ -51,22 +51,18 @@ Send requests to the proxy just like you would to Ollama:
 curl http://localhost:3131/api/generate -d '{"model": "llama2", "prompt": "Hello"}'
 ```
 
-### Testing
-
-A convenience script is provided to test the proxy:
-
-```bash
-./integration_test.sh
-```
-
 ## Configuration
 
-Currently, the following settings are hardcoded (but planned to be configurable):
+The proxy can be configured using environment variables:
+- **`OLLAMA_PROXY_PORT`**: The port the proxy listens on (default: `3131`).
+- **`OLLAMA_HOST`**: The URL of the upstream Ollama instance (default: `http://localhost:11434`).
 
-- **Proxy Port**: `3131`
-- **Ollama Upstream**: `http://localhost:11434`
+Example:
+```bash
+OLLAMA_PROXY_PORT=8080 OLLAMA_HOST=http://192.168.1.100:11434 ./ollama-proxy
+```
 
 ## Development
 
-See [AGENTS.md](AGENTS.md) for development guidelines and [TODO.md](TODO.md) for planned improvements.
+See [AGENTS.md](AGENTS.md) for development guidelines.
 

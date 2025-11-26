@@ -32,12 +32,5 @@ A lightweight Go HTTP proxy service that forwards all requests to Ollama and log
 Currently hardcoded:
 
 - Proxy port: `3131`
-- Ollama URL: `http://localhost:11434`
+- Ollama upstream URL: `http://localhost:11434`
 
-## Project Structure
-
-- `main.go` - HTTP server setup and entry point
-- `proxy.go` - Reverse proxy configuration
-- `logger.go` - Request logging middleware
-- `main_test.go` - Test suite
-- `go.mod` - Go module definition

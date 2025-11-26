@@ -1,4 +1,3 @@
-module m3-handshake
+module ollama-proxy
 
 go 1.21
-

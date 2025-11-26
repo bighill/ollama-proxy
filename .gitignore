@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-m3-handshake
+tmp/
 
 # Test binary, built with `go test -c`
 *.test
@@ -17,4 +17,7 @@ vendor/
 
 # Go workspace file
 go.work
+
+# Build output
+ollama-proxy
 

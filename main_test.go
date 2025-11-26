@@ -37,13 +37,13 @@ func TestLoggingMiddleware(t *testing.T) {
 	})
 
 	// Wrap with logging middleware
-	wrapped := loggingMiddleware(echoHandler, false)
+	wrapped := loggingMiddleware(echoHandler)
 
 	// Create test request with body
 	body := `{"test": "data"}`
 	req := httptest.NewRequest("POST", "/api/test", bytes.NewBufferString(body))
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	// Create response recorder
 	rr := httptest.NewRecorder()
 
@@ -63,14 +63,14 @@ func TestLoggingMiddleware(t *testing.T) {
 
 func TestLoggingMiddlewarePreservesBody(t *testing.T) {
 	var receivedBody []byte
-	
+
 	// Handler that captures the body
 	captureHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		receivedBody, _ = io.ReadAll(r.Body)
 		w.WriteHeader(http.StatusOK)
 	})
 
-	wrapped := loggingMiddleware(captureHandler, false)
+	wrapped := loggingMiddleware(captureHandler)
 
 	body := `{"model": "llama2", "prompt": "test"}`
 	req := httptest.NewRequest("POST", "/api/generate", bytes.NewBufferString(body))
@@ -88,7 +88,7 @@ func TestLoggingMiddlewareWithEmptyBody(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	wrapped := loggingMiddleware(handler, false)
+	wrapped := loggingMiddleware(handler)
 
 	req := httptest.NewRequest("GET", "/api/test", nil)
 	rr := httptest.NewRecorder()
@@ -105,9 +105,8 @@ func TestLogRequest(t *testing.T) {
 	body := `{"test": "json"}`
 	req := httptest.NewRequest("POST", "/api/test?foo=bar", bytes.NewBufferString(body))
 	req.Header.Set("X-Test-Header", "test-value")
-	
+
 	start := time.Now()
-	logRequest(req, []byte(body), start, false)
+	logRequest([]byte(body), start)
 	// If we get here without panic, test passes
 }
-

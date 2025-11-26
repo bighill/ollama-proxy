@@ -47,9 +47,9 @@ func createProxy() (*httputil.ReverseProxy, error) {
 				colorGray, colorBold, colorReset,
 				colorGreen, colorBold, resp.Status, colorReset)
 		}
+		fmt.Println()
 		return nil
 	}
 
 	return proxy, nil
 }
-

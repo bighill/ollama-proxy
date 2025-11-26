@@ -11,14 +11,12 @@ import (
 )
 
 const (
-	colorReset   = "\033[0m"
-	colorBold    = "\033[1m"
-	colorGreen   = "\033[32m"
-	colorBlue    = "\033[34m"
-	colorYellow  = "\033[33m"
-	colorCyan    = "\033[36m"
-	colorMagenta = "\033[35m"
-	colorGray    = "\033[90m"
+	colorReset = "\033[0m"
+	colorBold  = "\033[1m"
+	colorGreen = "\033[32m"
+	colorBlue  = "\033[34m"
+	colorCyan  = "\033[36m"
+	colorGray  = "\033[90m"
 )
 
 type contextKey string
@@ -26,7 +24,7 @@ type contextKey string
 const requestStartTimeKey contextKey = "requestStartTime"
 
 // loggingMiddleware wraps an HTTP handler with beautiful request logging
-func loggingMiddleware(next http.Handler, verbose bool) http.Handler {
+func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
@@ -44,94 +42,33 @@ func loggingMiddleware(next http.Handler, verbose bool) http.Handler {
 		}
 
 		// Log request
-		logRequest(r, bodyBytes, start, verbose)
+		logRequest(bodyBytes, start)
 
 		// Call next handler
 		next.ServeHTTP(w, r)
 	})
 }
 
-func logRequest(r *http.Request, body []byte, start time.Time, verbose bool) {
+func logRequest(body []byte, start time.Time) {
 	timestamp := start.Format("15:04:05.000")
 
-	if verbose {
-		// Verbose mode: log full traffic
-		fmt.Printf("\n%s%s╔════════════════════════════════════════════════════════════════╗%s\n", colorGray, colorBold, colorReset)
-		fmt.Printf("%s%s║%s %s%sREQUEST%s %s%s│%s %s%s%s%s%s\n", colorGray, colorBold, colorReset, colorCyan, colorBold, colorReset, colorGray, colorBold, colorReset, colorGray, colorBold, timestamp, colorReset, colorReset)
-		fmt.Printf("%s%s╠════════════════════════════════════════════════════════════════╣%s\n", colorGray, colorBold, colorReset)
-
-		// Method
-		fmt.Printf("%s%s║%s %sMethod:%s     %s%s%s%s\n", colorGray, colorBold, colorReset, colorYellow, colorReset, colorGreen, colorBold, r.Method, colorReset)
-
-		// Path
-		fmt.Printf("%s%s║%s %sPath:%s       %s%s%s%s\n", colorGray, colorBold, colorReset, colorYellow, colorReset, colorBlue, colorBold, r.URL.Path, colorReset)
-
-		// Query string
-		if r.URL.RawQuery != "" {
-			fmt.Printf("%s%s║%s %sQuery:%s      %s%s%s\n", colorGray, colorBold, colorReset, colorYellow, colorReset, colorCyan, r.URL.RawQuery, colorReset)
+	if len(body) > 0 {
+		// Try to extract user message content from JSON body
+		var payload struct {
+			Messages []struct {
+				Role    string `json:"role"`
+				Content string `json:"content"`
+			} `json:"messages"`
 		}
-
-		// Headers
-		if len(r.Header) > 0 {
-			fmt.Printf("%s%s║%s %sHeaders:%s    %s\n", colorGray, colorBold, colorReset, colorYellow, colorReset, colorReset)
-			for name, values := range r.Header {
-				for _, value := range values {
-					fmt.Printf("%s%s║%s            %s%s:%s %s%s%s\n", colorGray, colorBold, colorReset, colorMagenta, name, colorReset, colorCyan, value, colorReset)
-				}
-			}
+		if err := json.Unmarshal(body, &payload); err == nil && len(payload.Messages) > 0 {
+			fmt.Printf("%s%s%s\n", colorGray, colorBold, timestamp)
+			fmt.Printf("%s%s%s\n", colorBlue, colorBold, payload.Messages[0].Content)
+		} else {
+			// Fallback: print raw body
+			fmt.Printf("%s%s%s\n", colorGray, colorBold, timestamp)
+			fmt.Println("Content not available")
 		}
-
-		// Body
-		if len(body) > 0 {
-			fmt.Printf("%s%s║%s %sBody:%s       %s\n", colorGray, colorBold, colorReset, colorYellow, colorReset, colorReset)
-
-			// Try to pretty-print JSON
-			var prettyJSON bytes.Buffer
-			if err := json.Indent(&prettyJSON, body, "            ", "  "); err == nil {
-				// Successfully formatted as JSON
-				bodyLines := bytes.Split(prettyJSON.Bytes(), []byte("\n"))
-				for _, line := range bodyLines {
-					if len(line) > 0 {
-						fmt.Printf("%s%s║%s%s%s\n", colorGray, colorBold, colorReset, string(line), colorReset)
-					}
-				}
-			} else {
-				// Not JSON, print as-is with line breaks
-				bodyStr := string(body)
-				if len(bodyStr) > 500 {
-					bodyStr = bodyStr[:500] + "\n            ... (truncated)"
-				}
-				fmt.Printf("%s%s║%s            %s%s%s\n", colorGray, colorBold, colorReset, colorCyan, bodyStr, colorReset)
-			}
-		}
-
-		fmt.Printf("%s%s╚════════════════════════════════════════════════════════════════╝%s\n\n", colorGray, colorBold, colorReset)
 	} else {
-		// Non-verbose mode: log only the last user prompt content
-		if len(body) > 0 {
-			var jsonBody map[string]interface{}
-			if err := json.Unmarshal(body, &jsonBody); err == nil {
-				// First, try to find messages array and get last user message
-				if messages, ok := jsonBody["messages"].([]interface{}); ok && len(messages) > 0 {
-					// Iterate backwards to find the last message with role "user"
-					for i := len(messages) - 1; i >= 0; i-- {
-						if msg, ok := messages[i].(map[string]interface{}); ok {
-							if role, ok := msg["role"].(string); ok && role == "user" {
-								if content, ok := msg["content"].(string); ok && content != "" {
-									fmt.Printf("%s%s%s\n", colorCyan, content, colorReset)
-									return
-								}
-							}
-						}
-					}
-				}
-				// Fallback: try direct prompt field
-				if prompt, ok := jsonBody["prompt"].(string); ok && prompt != "" {
-					fmt.Printf("%s%s%s\n", colorCyan, prompt, colorReset)
-					return
-				}
-			}
-		}
-		// If no user prompt found, log nothing in non-verbose mode
+		fmt.Printf("%s%s%s\n", colorGray, colorBold, timestamp)
 	}
 }

@@ -1,15 +1,12 @@
 # Ollama Streaming Proxy
 
-A lightweight, zero-dependency Go HTTP proxy service that forwards all requests to Ollama and provides beautiful, colorized logs of requests and responses.
+A lightweight, zero-dependency Go HTTP proxy service that forwards all requests to Ollama and provides logs of requests and responses.
 
 ## Features
 
 - **Zero dependencies**: Uses only the Go standard library.
 - **Transparent proxying**: Forwards all requests to Ollama with full streaming support.
-- **Beautiful logging**:
-  - Logs request timestamp and content (extracts prompt from JSON).
-  - Logs response status and duration.
-  - Color-coded output for better readability.
+- **Simple logging**: Logs request prompt in terminal.
 - **Remote access**: Binds to `0.0.0.0` to allow access from other devices on your local network.
 
 ## Usage
@@ -53,7 +50,7 @@ curl http://localhost:3131/api/generate -d '{"model": "llama2", "prompt": "Hello
 
 ## Configuration
 
-The proxy can be configured using environment variables:
+The proxy configuration can be overridden using environment variables:
 - **`OLLAMA_PROXY_PORT`**: The port the proxy listens on (default: `3131`).
 - **`OLLAMA_HOST`**: The URL of the upstream Ollama instance (default: `http://localhost:11434`).
 
